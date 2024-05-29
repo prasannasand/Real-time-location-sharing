@@ -9,9 +9,10 @@ import {
 	MenuItem,
 } from "@mui/material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import axios from "axios";
 
-function Navbar({ onLogout }) {
+function Navbar({ isNotHome=false }) {
 	const [anchorEl, setAnchorEl] = React.useState(null);
 
 	const handleMenu = (event) => {
@@ -21,6 +22,21 @@ function Navbar({ onLogout }) {
 	const handleClose = () => {
 		setAnchorEl(null);
 	};
+
+	const handleLogout = () => {
+		console.log("Logging out...");
+		axios.post("http://localhost:8080/logout")
+        .then(response => {
+			document.cookie = "JSESSIONID=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/"
+            console.log(response.data); 
+        })
+        .catch(error => {
+            console.error("Logout error:", error);
+        });
+		navigate("/login"); // Redirect to login after logout
+	};
+
+	const navigate = useNavigate();
 
 	return (
 		<AppBar position="static">
@@ -55,10 +71,10 @@ function Navbar({ onLogout }) {
 				>
 					<MenuItem
 						component={RouterLink}
-						to="/Profile"
+						to={isNotHome ? "/" : "/Profile"}
 						onClick={handleClose}
 					>
-						Profile
+						{isNotHome ? 'Home' : 'Profile'}
 					</MenuItem>
 					<MenuItem
 						component={RouterLink}
@@ -77,7 +93,7 @@ function Navbar({ onLogout }) {
 					<MenuItem
 						onClick={() => {
 							handleClose();
-							onLogout();
+							handleLogout();
 						}}
 					>
 						Logout
