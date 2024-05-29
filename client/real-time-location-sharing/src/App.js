@@ -11,8 +11,8 @@ function App() {
 	return (
 		<Router>
 			<Routes>
-				<Route path="/" element={<Home />} exact />
-				<Route path="/login" element={<Login />} />
+				<Route path="/" element={<Login />} exact />
+				<Route path="/home" element={<Home />} exact />
 				<Route path="/register" element={<Register />} />
 				<Route path="/Geofencing" element={<Geofencing />} />
 				<Route path="/ManageMembers" element={<ManageMembers />} />

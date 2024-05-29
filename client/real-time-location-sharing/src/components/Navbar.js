@@ -12,7 +12,7 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function Navbar({ isNotHome=false }) {
+function Navbar({ isNotHome = false }) {
 	const [anchorEl, setAnchorEl] = React.useState(null);
 
 	const handleMenu = (event) => {
@@ -25,15 +25,17 @@ function Navbar({ isNotHome=false }) {
 
 	const handleLogout = () => {
 		console.log("Logging out...");
-		axios.post("http://localhost:8080/logout")
-        .then(response => {
-			document.cookie = "JSESSIONID=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/"
-            console.log(response.data); 
-        })
-        .catch(error => {
-            console.error("Logout error:", error);
-        });
-		navigate("/login"); // Redirect to login after logout
+		axios
+			.post("http://localhost:8080/logout")
+			.then((response) => {
+				document.cookie =
+					"JSESSIONID=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+				console.log(response.data);
+			})
+			.catch((error) => {
+				console.error("Logout error:", error);
+			});
+		navigate("/"); // Redirect to login after logout
 	};
 
 	const navigate = useNavigate();
@@ -71,7 +73,7 @@ function Navbar({ isNotHome=false }) {
 				>
 					<MenuItem
 						component={RouterLink}
-						to="/"
+						to="/home"
 						onClick={handleClose}
 					>
 						Home

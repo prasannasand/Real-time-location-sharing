@@ -141,7 +141,7 @@ function Geofencing() {
 	};
 
 	const handleLogout = () => {
-		navigate("/login");
+		navigate("/");
 	};
 
 	return (

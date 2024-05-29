@@ -1,14 +1,3 @@
-.side-section {
-	height: 100%;
-	padding: 20px;
-	overflow-y: auto;
-}
-
-.map-container {
-	height: calc(100vh - 200px); /* Fixed height for the map container */
-	padding: 20px;
-}
-
 .header {
 	margin-bottom: 20px;
 	text-align: center;
@@ -50,9 +39,10 @@
 
 .side-section {
 	flex: 1;
+	height: 90%;
 }
 
 .map-container {
 	flex: 1;
-	height: 100%;
+	height: 90%;
 }

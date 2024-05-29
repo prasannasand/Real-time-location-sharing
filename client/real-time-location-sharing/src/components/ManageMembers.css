@@ -1,0 +1,59 @@
+.manage-members-container {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.MuiGrid-container {
+	flex: 1;
+	overflow: auto;
+}
+
+.MuiGrid-item {
+	display: flex;
+	flex-direction: column;
+	width: 40%;
+	max-height: 90%;
+}
+
+.paper {
+	margin: 16px;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	width: 90%;
+}
+
+.list-container {
+	flex: 1;
+	overflow-y: auto;
+	.Button {
+		margin: 2px;
+	}
+}
+
+.header {
+	margin-bottom: 20px;
+	text-align: center;
+}
+
+.friend-item {
+	cursor: pointer;
+	padding: 10px;
+	border-bottom: 1px solid #eee;
+	display: flex;
+	align-items: center;
+}
+
+.friend-item:hover {
+	background-color: #f5f5f5;
+}
+
+.friend-avatar {
+	margin-right: 10px;
+}
+
+h3 {
+	margin-top: 0;
+}
