@@ -1,5 +1,28 @@
 const API_URL = "http://localhost:8080";
 
+export const updateLocation = async (location) => {
+	const response = await fetch(`${API_URL}/location/update`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(location),
+		credentials: "include",
+	});
+	return response.json();
+};
+
+export const getLocationByUserId = async (userId) => {
+	const response = await fetch(`${API_URL}/location/${userId}`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		credentials: "include", // Include cookies for authentication
+	});
+	return response.json();
+};
+
 export const getCurrentUser = async () => {
 	try {
 		const response = await fetch(`${API_URL}/appuser/current`, {
