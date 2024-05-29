@@ -5,11 +5,9 @@ import {
 	Toolbar,
 	IconButton,
 	Typography,
-	Button,
 	Menu,
 	MenuItem,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { Link as RouterLink } from "react-router-dom";
 
