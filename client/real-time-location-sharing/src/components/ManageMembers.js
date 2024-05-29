@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
+	getCurrentUser,
 	getFamilyMembers,
 	getPendingRequests,
 	addFamilyMember,
@@ -7,138 +8,185 @@ import {
 	declineFamilyMemberRequest,
 	deleteFamilyMember,
 } from "./api";
+import {
+	List,
+	ListItem,
+	ListItemAvatar,
+	ListItemText,
+	Avatar,
+	Grid,
+	Paper,
+	Button,
+	TextField,
+	Alert,
+} from "@mui/material";
 
-const ManageMembers = () => {
+function ManageMembers() {
+	const [currentUser, setCurrentUser] = useState(null);
 	const [familyMembers, setFamilyMembers] = useState([]);
 	const [pendingRequests, setPendingRequests] = useState([]);
-	const [newMember, setNewMember] = useState({ memberId: "" });
 	const [searchTerm, setSearchTerm] = useState("");
 	const [error, setError] = useState(null);
 
 	useEffect(() => {
-		fetchFamilyMembers();
-		fetchPendingRequests();
+		const fetchData = async () => {
+			const user = await getCurrentUser();
+			setCurrentUser(user);
+			fetchFamilyMembers();
+			fetchPendingRequests();
+		};
+
+		fetchData();
 	}, []);
 
 	const fetchFamilyMembers = async () => {
-		try {
-			const members = await getFamilyMembers();
-			setFamilyMembers(members);
-		} catch (err) {
-			console.error("Failed to fetch family members:", err);
-			setError("Failed to fetch family members.");
-		}
+		const members = await getFamilyMembers();
+		setFamilyMembers(members);
 	};
 
 	const fetchPendingRequests = async () => {
-		try {
-			const requests = await getPendingRequests();
-			setPendingRequests(requests);
-		} catch (err) {
-			console.error("Failed to fetch pending requests:", err);
-			setError("Failed to fetch pending requests.");
-		}
+		const requests = await getPendingRequests();
+		setPendingRequests(requests);
 	};
 
-	const handleAddFamilyMember = async () => {
+	const handleAddMember = async (event) => {
+		event.preventDefault();
+		const memberId = event.target.memberId.value;
+
+		if (currentUser.username === memberId) {
+			alert("You cannot add yourself as a family member.");
+			return;
+		}
+
 		try {
-			await addFamilyMember(newMember);
-			setNewMember({ memberId: "" });
-			fetchFamilyMembers();
-			fetchPendingRequests();
-		} catch (err) {
-			console.error("Failed to add family member:", err);
-			setError("Failed to add family member.");
+			await addFamilyMember({ memberId });
+			fetchPendingRequests(); // Refresh the pending requests
+			setError(null);
+		} catch (error) {
+			setError(error.message || "Failed to add family member.");
 		}
 	};
 
 	const handleAcceptRequest = async (id) => {
 		try {
 			await acceptFamilyMemberRequest(id);
-			fetchPendingRequests();
-			fetchFamilyMembers();
-		} catch (err) {
-			console.error("Failed to accept family member request:", err);
-			setError("Failed to accept family member request.");
+			fetchPendingRequests(); // Refresh the pending requests
+			fetchFamilyMembers(); // Refresh the family members list
+		} catch (error) {
+			console.error("Failed to accept family member request", error);
 		}
 	};
 
 	const handleDeclineRequest = async (id) => {
 		try {
 			await declineFamilyMemberRequest(id);
-			fetchPendingRequests();
-		} catch (err) {
-			console.error("Failed to decline family member request:", err);
-			setError("Failed to decline family member request.");
+			fetchPendingRequests(); // Refresh the pending requests
+		} catch (error) {
+			console.error("Failed to decline family member request", error);
 		}
 	};
 
-	const handleDeleteFamilyMember = async (id) => {
+	const handleDeleteMember = async (id) => {
 		try {
 			await deleteFamilyMember(id);
-			fetchFamilyMembers();
-		} catch (err) {
-			console.error("Failed to delete family member:", err);
-			setError("Failed to delete family member.");
+			fetchFamilyMembers(); // Refresh the family members list
+		} catch (error) {
+			console.error("Failed to delete family member request", error);
 		}
 	};
+	const filteredFamilyMembers = familyMembers.filter((member) =>
+		member.memberId.toLowerCase().includes(searchTerm.toLowerCase())
+	);
 
-	const filteredMembers = familyMembers.filter(
-		(member) =>
-			member.memberId &&
-			member.memberId.toLowerCase().includes(searchTerm.toLowerCase())
+	const filteredPendingRequests = pendingRequests.filter((request) =>
+		request.memberId.toLowerCase().includes(searchTerm.toLowerCase())
 	);
 
 	return (
-		<div>
-			<h2>Manage Family Members</h2>
-			{error && <p style={{ color: "red" }}>{error}</p>}
-			<input
-				type="text"
-				placeholder="Search members..."
-				value={searchTerm}
-				onChange={(e) => setSearchTerm(e.target.value)}
-			/>
-			<ul>
-				{filteredMembers.map((member) => (
-					<li key={member.id}>
-						{member.memberId}
-						<button
-							onClick={() => handleDeleteFamilyMember(member.id)}
+		<Grid container spacing={2}>
+			<Grid item xs={12} md={4}>
+				<Paper elevation={3} style={{ margin: 16, padding: 16 }}>
+					{error && (
+						<Alert severity="error" onClose={() => setError(null)}>
+							{error}
+						</Alert>
+					)}
+					<form onSubmit={handleAddMember}>
+						<TextField
+							name="memberId"
+							label="Add Family Member"
+							fullWidth
+						/>
+						<Button
+							type="submit"
+							variant="contained"
+							color="primary"
 						>
-							Delete
-						</button>
-					</li>
-				))}
-			</ul>
-			<h3>Add Family Member</h3>
-			<input
-				type="text"
-				placeholder="User ID"
-				value={newMember.memberId}
-				onChange={(e) =>
-					setNewMember({ ...newMember, memberId: e.target.value })
-				}
-			/>
-			<button onClick={handleAddFamilyMember}>Add</button>
-			<h3>Pending Requests</h3>
-			<ul>
-				{pendingRequests.map((request) => (
-					<li key={request.id}>
-						{request.userId} wants to add you as a family member
-						<button onClick={() => handleAcceptRequest(request.id)}>
-							Accept
-						</button>
-						<button
-							onClick={() => handleDeclineRequest(request.id)}
-						>
-							Decline
-						</button>
-					</li>
-				))}
-			</ul>
-		</div>
+							Add
+						</Button>
+					</form>
+					<TextField
+						label="Search Members"
+						fullWidth
+						margin="normal"
+						value={searchTerm}
+						onChange={(e) => setSearchTerm(e.target.value)}
+					/>
+					<List>
+						{filteredFamilyMembers.map((member) => (
+							<ListItem key={member.id}>
+								<ListItemAvatar>
+									<Avatar>{member.memberId[0]}</Avatar>
+								</ListItemAvatar>
+								<ListItemText primary={member.memberId} />
+								<Button
+									variant="contained"
+									color="secondary"
+									onClick={() =>
+										handleDeleteMember(member.id)
+									}
+								>
+									Remove
+								</Button>
+							</ListItem>
+						))}
+					</List>
+				</Paper>
+			</Grid>
+			<Grid item xs={12} md={4}>
+				<Paper elevation={3} style={{ margin: 16, padding: 16 }}>
+					<h3>Pending Requests</h3>
+					<List>
+						{filteredPendingRequests.map((request) => (
+							<ListItem key={request.id}>
+								<ListItemAvatar>
+									<Avatar>{request.memberId[0]}</Avatar>
+								</ListItemAvatar>
+								<ListItemText primary={request.memberId} />
+								<Button
+									variant="contained"
+									color="primary"
+									onClick={() =>
+										handleAcceptRequest(request.id)
+									}
+								>
+									Accept
+								</Button>
+								<Button
+									variant="contained"
+									color="secondary"
+									onClick={() =>
+										handleDeclineRequest(request.id)
+									}
+								>
+									Decline
+								</Button>
+							</ListItem>
+						))}
+					</List>
+				</Paper>
+			</Grid>
+		</Grid>
 	);
-};
-
+}
 export default ManageMembers;
