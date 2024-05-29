@@ -1,0 +1,58 @@
+.side-section {
+	height: 100%;
+	padding: 20px;
+	overflow-y: auto;
+}
+
+.map-container {
+	height: calc(100vh - 200px); /* Fixed height for the map container */
+	padding: 20px;
+}
+
+.header {
+	margin-bottom: 20px;
+	text-align: center;
+}
+
+.friend-item {
+	cursor: pointer;
+	padding: 10px;
+	border-bottom: 1px solid #eee;
+	display: flex;
+	align-items: center;
+}
+
+.friend-item:hover {
+	background-color: #f5f5f5;
+}
+
+.friend-avatar {
+	margin-right: 10px;
+}
+
+/* Ensure the container itself is also full height */
+.geofencing-container {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.MuiGrid-container {
+	flex: 1;
+	overflow: hidden; /* Prevent overflow of the entire grid */
+}
+
+.MuiGrid-item {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.side-section {
+	flex: 1;
+}
+
+.map-container {
+	flex: 1;
+	height: 100%;
+}

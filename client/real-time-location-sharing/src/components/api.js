@@ -1,5 +1,19 @@
 const API_URL = "http://localhost:8080";
 
+export const getGeofenceLogs = async () => {
+	const response = await fetch(`${API_URL}/geofence-log/get`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		credentials: "include",
+	});
+	if (response.ok) {
+		return response.json();
+	}
+	return [];
+};
+
 export const getGeofences = async () => {
 	const response = await fetch(`${API_URL}/geofence/all`, {
 		method: "GET",
