@@ -1,15 +1,36 @@
 const API_URL = "http://localhost:8080";
 
-export const updateLocation = async (location) => {
-	const response = await fetch(`${API_URL}/location/update`, {
+export const getGeofences = async () => {
+	const response = await fetch(`${API_URL}/geofence/all`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		credentials: "include", // Include cookies for authentication
+	});
+	return response.json();
+};
+
+export const addGeofence = async (geofence) => {
+	const response = await fetch(`${API_URL}/geofence/add`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify(location),
-		credentials: "include",
+		body: JSON.stringify(geofence),
+		credentials: "include", // Include cookies for authentication
 	});
 	return response.json();
+};
+
+export const deleteGeofence = async (id) => {
+	await fetch(`${API_URL}/geofence/delete/${id}`, {
+		method: "DELETE",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		credentials: "include", // Include cookies for authentication
+	});
 };
 
 export const getLocationByUserId = async (userId) => {
@@ -19,6 +40,18 @@ export const getLocationByUserId = async (userId) => {
 			"Content-Type": "application/json",
 		},
 		credentials: "include", // Include cookies for authentication
+	});
+	return response.json();
+};
+
+export const updateLocation = async (location) => {
+	const response = await fetch(`${API_URL}/location/update`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(location),
+		credentials: "include",
 	});
 	return response.json();
 };

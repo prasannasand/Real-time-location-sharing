@@ -86,8 +86,6 @@ function Home() {
 	const handleMemberClick = (location) => {
 		setMapCenter(location);
 	};
-
-
 	return (
 		<div className="home-container">
 			<Navbar isNotHome={false}/>
