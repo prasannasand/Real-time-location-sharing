@@ -160,9 +160,9 @@ function ManageMembers() {
 						{filteredPendingRequests.map((request) => (
 							<ListItem key={request.id}>
 								<ListItemAvatar>
-									<Avatar>{request.memberId[0]}</Avatar>
+									<Avatar>{request.userId[0]}</Avatar>
 								</ListItemAvatar>
-								<ListItemText primary={request.memberId} />
+								<ListItemText primary={request.userId} />
 								<Button
 									variant="contained"
 									color="primary"
