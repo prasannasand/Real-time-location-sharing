@@ -28,7 +28,7 @@ public class FamilyMemberController {
     }
 
     @PostMapping("/add")
-    public FamilyMember addFamilyMember(@RequestBody FamilyMember familyMember, Authentication authentication) {
+    public FamilyMember addFamilyMember(@RequestBody FamilyMember familyMember, Authentication authentication) throws Exception {
         String userId = authentication != null ? authentication.getName() : "anonymous";
         familyMember.setUserId(userId);
         return familyMemberService.addFamilyMember(familyMember);

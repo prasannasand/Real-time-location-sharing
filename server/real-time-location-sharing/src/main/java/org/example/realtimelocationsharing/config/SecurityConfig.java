@@ -2,6 +2,7 @@ package org.example.realtimelocationsharing.config;
 
 import org.example.realtimelocationsharing.model.FamilyMember;
 import org.example.realtimelocationsharing.service.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,6 +11,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,7 +39,7 @@ public class SecurityConfig {
                 .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/home", true)
+                .defaultSuccessUrl("/", true)
                 .failureUrl("/login?error=true")
                 .permitAll()
                 .and()
@@ -61,19 +64,26 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.builder()
-                .username("testuser")
-                .password(passwordEncoder().encode("testpass"))
-                .roles("USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(user);
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        UserDetails user = User.builder()
+//                .username("testuser")
+//                .password(passwordEncoder().encode("testpass"))
+//                .roles("USER")
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(user);
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager customAuthenticationManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+                .authenticationProvider(authenticationProvider())
+                .build();
     }
 }
