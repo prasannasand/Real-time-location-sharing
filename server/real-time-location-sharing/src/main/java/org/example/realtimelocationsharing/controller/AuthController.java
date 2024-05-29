@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.example.realtimelocationsharing.model.AppUser;
 import org.example.realtimelocationsharing.repository.UserRepository;
 import java.util.Optional;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 
 @RestController
 public class AuthController {
@@ -58,5 +60,12 @@ public class AuthController {
     @GetMapping("/auth/current")
     public Authentication getCurrentUser(Authentication authentication) {
         return authentication;
+    }
+
+    @PostMapping("/logout")
+    public String logout() {
+        System.out.println("Logged out successfully");
+        SecurityContextHolder.clearContext();
+        return "Logout successful";
     }
 }

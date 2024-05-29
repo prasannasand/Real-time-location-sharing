@@ -13,10 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 @Configuration
 public class SecurityConfig {
@@ -37,16 +35,19 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin()
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true)
-                .failureUrl("/login?error=true")
-                .permitAll()
-                .and()
+                    .loginPage("/login")
+                    .loginProcessingUrl("/login")
+                    .defaultSuccessUrl("/", true)
+                    .failureUrl("/login?error=true")
+                    .permitAll()
+                    .and()
                 .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout=true")
-                .permitAll()
+                    .logoutUrl("/logout")
+                    .invalidateHttpSession(true)
+                    .logoutSuccessUrl("/login?logout=true")
+                    .deleteCookies("JSESSIONID")
+                    .addLogoutHandler(cookieClearingLogoutHandler())
+                    .permitAll()
                 .and()
                 .cors() // Allow CORS
                 .and()
@@ -55,6 +56,10 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Bean
+    public LogoutHandler cookieClearingLogoutHandler() {
+        return new CookieClearingLogoutHandler("JSESSIONID");
+    }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {

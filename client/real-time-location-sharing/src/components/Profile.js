@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Button, Container, Typography } from "@mui/material";
+import Navbar from "./Navbar";
 
 function Profile() {
 	const [user, setUser] = useState({
@@ -17,6 +18,9 @@ function Profile() {
 	};
 
 	return (
+		<>
+		<Navbar isNotHome={true} />
+
 		<Container component="main" maxWidth="xs">
 			<Typography component="h1" variant="h5">
 				Edit Profile
@@ -52,6 +56,7 @@ function Profile() {
 				</Button>
 			</form>
 		</Container>
+		</>
 	);
 }
 

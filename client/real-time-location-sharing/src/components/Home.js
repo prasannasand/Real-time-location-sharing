@@ -24,7 +24,6 @@ function MapCenter({ center }) {
 }
 
 function Home() {
-	const navigate = useNavigate();
 	const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
 	const [currentUser, setCurrentUser] = useState(null);
 	const [familyMembers, setFamilyMembers] = useState([]);
@@ -87,20 +86,11 @@ function Home() {
 		setMapCenter(location);
 	};
 
-	const handleLogout = () => {
-		// Perform logout logic here
-		console.log("Logging out...");
-		navigate("/login"); // Redirect to login after logout
-	};
 
 	return (
 		<div className="home-container">
-			<Navbar onLogout={handleLogout} />
-			<Grid
-				container
-				spacing={2}
-				style={{ height: "calc(100vh - 200px)" }}
-			>
+			<Navbar isNotHome={false}/>
+			<Grid container spacing={2} style={{ height: "calc(100vh - 200px)" }}>
 				<Grid item xs={12} md={4}>
 					<Paper className="side-section" elevation={3}>
 						<Typography variant="h5" className="header">
