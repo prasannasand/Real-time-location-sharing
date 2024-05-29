@@ -8,7 +8,6 @@ import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
 import { Grid, Paper, Typography } from "@mui/material";
 import Navbar from "./Navbar";
-import { useNavigate } from "react-router-dom";
 import { getCurrentUser } from "./api"; // Ensure the correct path to your api.js
 import "./Home.css"; // Import the CSS file
 
@@ -19,7 +18,6 @@ function MapCenter({ center }) {
 }
 
 function Home() {
-	const navigate = useNavigate();
 	const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
 	const [currentUser, setCurrentUser] = useState(null); // State to store the current user
 	const [friends, setFriends] = useState([
@@ -45,15 +43,10 @@ function Home() {
 		setMapCenter(location);
 	};
 
-	const handleLogout = () => {
-		// Perform logout logic here
-		console.log("Logging out...");
-		navigate("/login"); // Redirect to login after logout
-	};
 
 	return (
 		<div className="home-container">
-			<Navbar onLogout={handleLogout} />
+			<Navbar isNotHome={false}/>
 			<Grid container spacing={2} style={{ height: "calc(100vh - 200px)" }}>
 				<Grid item xs={12} md={4}>
 					<Paper className="side-section" elevation={3}>

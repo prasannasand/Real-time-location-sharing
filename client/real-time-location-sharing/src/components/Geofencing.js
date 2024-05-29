@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Button, Container, Typography } from "@mui/material";
+import Navbar from "./Navbar";
 
 function Geofencing() {
 	const [coordinates, setCoordinates] = useState({
@@ -17,6 +18,8 @@ function Geofencing() {
 	};
 
 	return (
+		<>
+		<Navbar isNotHome={true} />
 		<Container component="main" maxWidth="xs">
 			<Typography component="h1" variant="h5">
 				Set Geofencing Area
@@ -52,6 +55,7 @@ function Geofencing() {
 				</Button>
 			</form>
 		</Container>
+		</>
 	);
 }
 
