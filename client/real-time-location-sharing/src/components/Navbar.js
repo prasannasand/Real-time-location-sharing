@@ -71,10 +71,10 @@ function Navbar({ isNotHome=false }) {
 				>
 					<MenuItem
 						component={RouterLink}
-						to={isNotHome ? "/" : "/Profile"}
+						to="/"
 						onClick={handleClose}
 					>
-						{isNotHome ? 'Home' : 'Profile'}
+						Home
 					</MenuItem>
 					<MenuItem
 						component={RouterLink}
