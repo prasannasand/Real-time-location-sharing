@@ -85,12 +85,14 @@ function Home() {
 	const handleMemberClick = (location) => {
 		setMapCenter(location);
 	};
-
-
 	return (
 		<div className="home-container">
-			<Navbar isNotHome={false}/>
-			<Grid container spacing={2} style={{ height: "calc(100vh - 200px)" }}>
+			<Navbar isNotHome={false} />
+			<Grid
+				container
+				spacing={2}
+				style={{ height: "calc(100vh - 200px)" }}
+			>
 				<Grid item xs={12} md={4}>
 					<Paper className="side-section" elevation={3}>
 						<Typography variant="h5" className="header">
