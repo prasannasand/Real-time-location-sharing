@@ -8,8 +8,14 @@ import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
 import { Grid, Paper, Typography } from "@mui/material";
 import Navbar from "./Navbar";
-import { getCurrentUser } from "./api"; // Ensure the correct path to your api.js
-import "./Home.css"; // Import the CSS file
+import { useNavigate } from "react-router-dom";
+import {
+	getCurrentUser,
+	getFamilyMembers,
+	getLocationByUserId,
+	updateLocation,
+} from "./api";
+import "./Home.css";
 
 function MapCenter({ center }) {
 	const map = useMap();
@@ -19,27 +25,64 @@ function MapCenter({ center }) {
 
 function Home() {
 	const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
-	const [currentUser, setCurrentUser] = useState(null); // State to store the current user
-	const [friends, setFriends] = useState([
-		{ id: 1, name: "Alice", location: [52.505, -0.09] },
-		{ id: 2, name: "Bob", location: [51.515, -0.1] },
-		{ id: 3, name: "Charlie", location: [51.525, -0.11] },
-	]);
+	const [currentUser, setCurrentUser] = useState(null);
+	const [familyMembers, setFamilyMembers] = useState([]);
 
 	useEffect(() => {
-		const fetchCurrentUser = async () => {
+		const fetchData = async () => {
 			try {
 				const user = await getCurrentUser();
 				setCurrentUser(user);
+				const members = await getFamilyMembers();
+				const membersWithLocations = await Promise.all(
+					members.map(async (member) => {
+						const location = await getLocationByUserId(
+							member.memberId
+						);
+						if (location) {
+							return {
+								...member,
+								latitude: location.latitude,
+								longitude: location.longitude,
+							};
+						} else {
+							return {
+								...member,
+								latitude: null,
+								longitude: null,
+							};
+						}
+					})
+				);
+				setFamilyMembers(membersWithLocations);
 			} catch (err) {
-				console.error("Failed to fetch current user:", err);
+				console.error("Failed to fetch data:", err);
 			}
 		};
 
-		fetchCurrentUser();
+		fetchData();
+
+		const updateLocationPeriodically = () => {
+			navigator.geolocation.getCurrentPosition(async (position) => {
+				try {
+					await updateLocation({
+						latitude: position.coords.latitude,
+						longitude: position.coords.longitude,
+					});
+				} catch (err) {
+					console.error("Failed to update location:", err);
+				}
+			});
+		};
+
+		// Update location every 10 seconds
+		const intervalId = setInterval(updateLocationPeriodically, 10000);
+
+		// Cleanup interval on component unmount
+		return () => clearInterval(intervalId);
 	}, []);
 
-	const handleFriendClick = (location) => {
+	const handleMemberClick = (location) => {
 		setMapCenter(location);
 	};
 
@@ -51,24 +94,56 @@ function Home() {
 				<Grid item xs={12} md={4}>
 					<Paper className="side-section" elevation={3}>
 						<Typography variant="h5" className="header">
-							{currentUser ? `Welcome, ${currentUser.username}!` : "Loading user information..."}
+							{currentUser
+								? `Welcome, ${currentUser.username}!`
+								: "Loading user information..."}
 						</Typography>
-						<List>
-							{friends.map((friend) => (
-								<ListItem
-									key={friend.id}
-									className="friend-item"
-									onClick={() =>
-										handleFriendClick(friend.location)
-									}
-								>
-									<ListItemAvatar>
-										<Avatar className="friend-avatar">{friend.name[0]}</Avatar>
-									</ListItemAvatar>
-									<ListItemText primary={friend.name} />
-								</ListItem>
-							))}
-						</List>
+						{Array.isArray(familyMembers) &&
+						familyMembers.length === 0 ? (
+							<Typography variant="body1">
+								No family members exist. Please add from manage
+								members.
+							</Typography>
+						) : (
+							<List>
+								{Array.isArray(familyMembers) &&
+									familyMembers.map(
+										(member) =>
+											member.memberId && (
+												<ListItem
+													button={
+														!!member.latitude &&
+														!!member.longitude
+													}
+													key={member.id}
+													onClick={() =>
+														handleMemberClick([
+															member.latitude,
+															member.longitude,
+														])
+													}
+												>
+													<ListItemAvatar>
+														<Avatar>
+															{member.memberId[0]}
+														</Avatar>
+													</ListItemAvatar>
+													<ListItemText
+														primary={
+															member.memberId
+														}
+														secondary={
+															member.latitude &&
+															member.longitude
+																? "Location found"
+																: "No location found"
+														}
+													/>
+												</ListItem>
+											)
+									)}
+							</List>
+						)}
 					</Paper>
 				</Grid>
 				<Grid item xs={12} md={8}>
@@ -79,16 +154,24 @@ function Home() {
 							style={{ height: "100%", width: "100%" }}
 						>
 							<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-							{friends.map((friend) => (
-								<Marker
-									key={friend.id}
-									position={friend.location}
-								>
-									<Popup>
-										{friend.name}'s location
-									</Popup>
-								</Marker>
-							))}
+							{Array.isArray(familyMembers) &&
+								familyMembers.map(
+									(member) =>
+										member.latitude &&
+										member.longitude && (
+											<Marker
+												key={member.id}
+												position={[
+													member.latitude,
+													member.longitude,
+												]}
+											>
+												<Popup>
+													{member.memberId}'s location
+												</Popup>
+											</Marker>
+										)
+								)}
 							<MapCenter center={mapCenter} />
 						</MapContainer>
 					</Paper>

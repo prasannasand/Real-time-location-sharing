@@ -103,6 +103,7 @@ function ManageMembers() {
     request.memberId.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+
   return (
     <>
       <Navbar isNotHome={true}/>
