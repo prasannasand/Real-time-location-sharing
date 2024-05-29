@@ -8,7 +8,6 @@ import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
 import { Grid, Paper, Typography } from "@mui/material";
 import Navbar from "./Navbar";
-import { useNavigate } from "react-router-dom";
 import {
 	getCurrentUser,
 	getFamilyMembers,
@@ -16,6 +15,8 @@ import {
 	updateLocation,
 } from "./api";
 import "./Home.css";
+import "leaflet/dist/leaflet.css";
+import "././../leafletconfig";
 
 function MapCenter({ center }) {
 	const map = useMap();
@@ -24,7 +25,7 @@ function MapCenter({ center }) {
 }
 
 function Home() {
-	const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
+	const [mapCenter, setMapCenter] = useState([39.8283, -98.5795]);
 	const [currentUser, setCurrentUser] = useState(null);
 	const [familyMembers, setFamilyMembers] = useState([]);
 
@@ -90,7 +91,7 @@ function Home() {
 	return (
 		<div className="home-container">
 			<Navbar isNotHome={false}/>
-			<Grid container spacing={2} style={{ height: "calc(100vh - 200px)" }}>
+			<Grid container spacing={2} style={{ height: "calc(100vh - 100px)" }}>
 				<Grid item xs={12} md={4}>
 					<Paper className="side-section" elevation={3}>
 						<Typography variant="h5" className="header">
