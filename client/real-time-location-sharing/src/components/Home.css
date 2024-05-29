@@ -1,0 +1,36 @@
+.home-container {
+    padding: 20px;
+  }
+  
+  .side-section {
+    height: 100%;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
+  .map-container {
+    height: 100%;
+    padding: 20px;
+  }
+  
+  .header {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .friend-item {
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+  }
+  
+  .friend-item:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .friend-avatar {
+    margin-right: 10px;
+  }
+  
