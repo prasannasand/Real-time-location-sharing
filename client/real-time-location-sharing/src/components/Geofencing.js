@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./Geofencing.css";
 import {
 	MapContainer,
 	TileLayer,
@@ -29,8 +30,8 @@ import {
 	getGeofences,
 	addGeofence,
 	deleteGeofence,
+	getGeofenceLogs,
 } from "./api";
-// import "./Geofencing.css";
 
 function MapCenter({ center }) {
 	const map = useMap();
@@ -46,7 +47,7 @@ function Geofencing() {
 	const [geofences, setGeofences] = useState([]);
 	const [geofenceCenter, setGeofenceCenter] = useState("");
 	const [geofenceRadius, setGeofenceRadius] = useState("");
-	const [selectedGeofence, setSelectedGeofence] = useState(null);
+	const [geofenceLogs, setGeofenceLogs] = useState([]);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -54,9 +55,25 @@ function Geofencing() {
 			setCurrentUser(user);
 			await fetchFamilyMembers();
 			await fetchGeofences();
+			await fetchGeofenceLogs();
 		};
 
 		fetchData();
+	}, []);
+
+	useEffect(() => {
+		const updateLocation = async () => {
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(async (position) => {
+					const { latitude, longitude } = position.coords;
+					await updateLocation({ latitude, longitude });
+				});
+			}
+		};
+
+		const locationInterval = setInterval(updateLocation, 5000); // Update location every 5 seconds
+
+		return () => clearInterval(locationInterval);
 	}, []);
 
 	const fetchFamilyMembers = async () => {
@@ -76,6 +93,11 @@ function Geofencing() {
 	const fetchGeofences = async () => {
 		const geofences = await getGeofences();
 		setGeofences(Array.isArray(geofences) ? geofences : []);
+	};
+
+	const fetchGeofenceLogs = async () => {
+		const logs = await getGeofenceLogs();
+		setGeofenceLogs(logs);
 	};
 
 	const handleAddGeofence = async () => {
@@ -116,11 +138,6 @@ function Geofencing() {
 		if (location) {
 			setMapCenter([location.latitude, location.longitude]);
 		}
-	};
-
-	const handleGeofenceClick = (geofence) => {
-		setMapCenter([geofence.latitude, geofence.longitude]);
-		setSelectedGeofence(geofence);
 	};
 
 	const handleLogout = () => {
@@ -204,7 +221,10 @@ function Geofencing() {
 									<ListItem
 										key={geofence.id}
 										onClick={() =>
-											handleGeofenceClick(geofence)
+											setMapCenter([
+												geofence.latitude,
+												geofence.longitude,
+											])
 										}
 									>
 										<ListItemText
@@ -225,7 +245,28 @@ function Geofencing() {
 									</ListItem>
 								))
 							) : (
-								<Typography>No geofences available.</Typography>
+								<Typography>No available geofences.</Typography>
+							)}
+						</List>
+						<Typography variant="h6" style={{ marginTop: 20 }}>
+							Geofence Logs:
+						</Typography>
+						<List>
+							{geofenceLogs.length > 0 ? (
+								geofenceLogs.map((log, index) => (
+									<ListItem key={index}>
+										<ListItemText
+											primary={`${log.memberId} ${log.action}`}
+											secondary={new Date(
+												log.timestamp
+											).toLocaleString()}
+										/>
+									</ListItem>
+								))
+							) : (
+								<Typography>
+									No geofence logs available.
+								</Typography>
 							)}
 						</List>
 					</Paper>
@@ -263,12 +304,7 @@ function Geofencing() {
 											geofence.longitude,
 										]}
 										radius={geofence.radius}
-										color={
-											selectedGeofence &&
-											selectedGeofence.id === geofence.id
-												? "blue"
-												: "red"
-										}
+										color="red"
 									/>
 								))}
 							<MapCenter center={mapCenter} />
